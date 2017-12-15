@@ -1,7 +1,7 @@
 <template>
   <div class="chat">
     欢迎您{{userName}} and {{userName2}}
-    <div ref='getsession' @click='getSession'>点击获取session值</div>
+    <div ref='getsession' @click='sendEmit'>点击获取session值</div>
   </div>
 </template>
 
@@ -13,8 +13,17 @@ export default {
       userName: ''
     }
   },
+  sockets:{
+    connect: function(){
+      console.log('socket connected');
+    },
+    answer: function (val) {
+      console.log('得到服务器的回答'+val);
+      this.$socket.emit('question2', val);
+    }
+  },
   created () {
-    this.$root.$http.get('http://localhost:3000/getsession').then((response) => {
+    this.$root.$http.get('http://localhost:3000/api').then((response) => {
       // console.log(response.data);
       this.userName = response.data;
     }).catch((err) => { // 错误处理
@@ -22,13 +31,9 @@ export default {
     });
   },
   methods: {
-    getSession () {
-      this.$root.$http.get('http://localhost:3000/login').then((response) => {
-        console.log('获取到的session值是:', response.data);
-        this.userName = response.data;
-      }).catch((err) => { // 错误处理
-        console.log(err);
-      });
+    sendEmit () {
+      console.log('ok');
+      this.$socket.emit('question', 'hahaha');
     }
   },
   computed: {
