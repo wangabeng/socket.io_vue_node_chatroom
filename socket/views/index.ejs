@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+</head>
+<body>
+	<div id='haha'></div>
+	<script src='/socket.io/socket.io.js'></script>
+	<script>
+		var socket = io();
+		socket.emit('question', '吃了吗' + Math.random());
+		socket.on('answer', (msg) => {
+			// alert(msg);
+			document.getElementById('haha').innerHTML = msg;
+			// socket.emit('好的', '第二次告诉服务器');
+		});
+	</script>
+	test
+	<img src='./1234.jpg'>
+</body>
+</html>
