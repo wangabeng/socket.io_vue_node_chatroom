@@ -95,26 +95,30 @@ app.use((req, res, next) => {
 app.get('/api', (req, res) => {
 	// 检查是否登录
 	if (req.session.name) {
+		console.log(req.session.name);
 		// 判断是否是第二次登录 如果是第二次登录 此时session存在 如果之前关闭流量拿起了 虽然session存在 但是 这个session已经从sessionList 中删除了 所以此时要把这个session值再添加到中
-		for (var i =0; i < sessionList.length; i++) {
-			if (sessionList[i].sessionName === req.session.name) {
+/*		for (var i =0; i < sessionList.length; i++) {
+			if (sessionList[i].sessionName === req.session.name) { // 如果req.session.name存在且数组中也有
+				console.log('存在且数组中也有');
+				res.send(req.session.name);
+				return;
 				break;
 			}
+			// 如果req.session.name存在 数组中没有 那就是重新登录了
 			if (i === sessionList.length-1) {
 				// 此时说明没有找到
+				console.log('存在 数组中没有');
 				sessionList.push({
 					sessionName: req.session.name,
 				});
-				console.log(sessionList);
+				console.log('sessionList', sessionList);
 				// 如何让客户端重新刷新sessionList 数据
-				io.emit('relogin', {
-					userList: sessionList
-				})
+				res.send(req.session.name);
+				return;
 			}
-		}	
-
-		// 如果登录了 就设置sendData的sessionName为之前设置好的session的username
+		}*/
 		res.send(req.session.name);
+		// 如果登录了 就设置sendData的sessionName为之前设置好的session的username
 	}else{
 		// 如果没有登录 就设置session值为一个随机数 注意转化成字符串 随机数为四位小写字母加上四位随机数字组成
 		req.session.name = getRandomName();
@@ -123,7 +127,7 @@ app.get('/api', (req, res) => {
 		sessionList.push({
 			sessionName: req.session.name,
 		});
-		console.log('不存在 重新设置', sessionList);
+		// console.log('不存在 重新设置', sessionList);
 		res.send(req.session.name);
 	}
 });

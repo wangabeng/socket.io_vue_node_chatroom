@@ -77,6 +77,7 @@ export default {
     },
     // 重新登录
     relogin: function (msg) {
+      console.log('reload');
       this.userList = msg.userList;
     }
   },
