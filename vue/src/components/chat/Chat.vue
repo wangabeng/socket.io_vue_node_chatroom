@@ -1,7 +1,35 @@
 <template>
   <div class="chat">
-    欢迎您{{userName}} and {{userName2}}
-    <div ref='getsession' @click='sendEmit'>点击获取session值</div>
+    <!---->
+    <span>欢迎您{{userName}}</span>
+    <div class='msg'>
+      <div v-for='val in dialog'>
+        {{val.sayer}} saying: {{val.content}}{{val.id}}
+      </div>
+    </div>  
+    <div>
+      <input type='text' ref='msg'>
+      <input type='button' value='send' ref='send' @click='sendEmit'>
+    </div>
+  
+    <div class="chat-wrapper">
+      <div class="user-list">
+        <div class='search'>
+          <input type='text' placeholder='搜索成员'>
+          <i class='search-icon'></i>
+        </div>
+        
+        <ul>
+          <li v-for='value in userList'>
+            {{value}}
+          </li>
+        </ul>
+      </div>
+      <div class="dialog">
+        <div class="dialog-content"></div>
+        <div class="send-msg"></div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -10,39 +38,72 @@ export default {
   name: 'Chat',
   data () {
     return {
-      userName: ''
+      userName: '',
+      dialog: [],
+      userList: {},
+      id: ''
     }
   },
   sockets:{
     connect: function(){
       console.log('socket connected');
+      // this.id=this.$socket.id;
+      console.log('id', this.$socket);
     },
     answer: function (val) {
-      console.log('得到服务器的回答'+val);
-      this.$socket.emit('question2', val);
+      // 监听服务器回复 把回复内容push到dialog数组中
+      // console.log(val.sayer);
+      // this.userName 应该替换成由服务器发送来的session值
+      this.dialog.push(val);
+    },
+    createUserAnswer: function () {
+      // 获取所有的用户列表
+      this.$root.$http.get('http://localhost:3000/getUserList').then((response) => {
+        // console.log(response.data);
+        this.userList = response.data.userList;
+      }).catch((err) => { // 错误处理
+        console.log(err);
+      });
+    },
+    userLeave : function () {
+      // 获取所有的用户列表
+      this.$root.$http.get('http://localhost:3000/getUserList').then((response) => {
+        // console.log(response.data);
+        console.log('userLeave');
+        this.userList = response.data.userList;
+      }).catch((err) => { // 错误处理
+        console.log(err);
+      });
     }
   },
   created () {
+  // 创建的时候获取session的username值
     this.$root.$http.get('http://localhost:3000/api').then((response) => {
       // console.log(response.data);
       this.userName = response.data;
+
+      // 告诉服务器创建了一个新的用户
+      this.$socket.emit('createUser', 'createUser');
+
+      // this.$socket.nsp = '/abeng';
+
+      // 设置id值
+      this.id=this.$socket.id;
+      console.log(this.id);
     }).catch((err) => { // 错误处理
       console.log(err);
     });
   },
   methods: {
+    // 发送消息给服务器
     sendEmit () {
-      console.log('ok');
-      this.$socket.emit('question', 'hahaha');
-    }
-  },
-  computed: {
-    userName2 () {
-      this.$root.$http.get('http://localhost:3000/').then((response) => {
-        // console.log(response.data);
-        return response.data;
-      }).catch((err) => { // 错误处理
-        console.log(err);
+      // 把输入框的内容发送给服务器
+      // 获取输入框的内容
+      var content = this.$refs.msg.value;
+      this.$socket.emit('question', {
+        'sayer': this.userName,
+        'content': content,
+        'id': this.id
       });
     }
   }
@@ -52,10 +113,25 @@ export default {
 <style lang='stylus' rel='stylesheet/stylus'>
 @import '~common/stylus/variable.styl'
 .chat
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: $color-background;
+  position: absolute
+  left: 0
+  top: 0
+  width: 100%
+  height: 100%
+  background-color: $color-background
+  font-size: 12px
+
+
+  .chat-wrapper
+    width: 90%
+    height: 90%
+    border: 1px solid red
+    margin: 10px auto auto auto
+    border-radius: 5px
+
+    .user-list
+      width: 20%
+      height: 100%
+      background-color: $color-background-dark
+      border-radius: 5px 0 0 5px
 </style>

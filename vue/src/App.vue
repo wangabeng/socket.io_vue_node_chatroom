@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <router-link to='/chat' tag='div' class='chat-button'>
-      <span>与客服交谈</span>
+      <span>进入聊天室</span>
     </router-link>
     <router-view></router-view>
   </div>
