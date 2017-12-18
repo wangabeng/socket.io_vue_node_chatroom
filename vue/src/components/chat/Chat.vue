@@ -53,6 +53,8 @@ export default {
       // console.log(val.sayer);
       // this.userName 应该替换成由服务器发送来的session值
       this.dialog.push(val);
+      // dialog的第一条数据是自动发送的空内容 目的是为了把session和id关联起来 所以展示在内容区断的dialog把第一条数据去除掉
+      this.dialog = this.dialog.splice(1);
     },
     createUserAnswer: function () {
       // 获取所有的用户列表
@@ -88,6 +90,10 @@ export default {
       // 设置id值
       this.id=this.$socket.id;
       console.log(this.id);
+
+      // 发送消息给服务器
+      this.sendEmit();
+
     }).catch((err) => { // 错误处理
       console.log(err);
     });
@@ -118,7 +124,6 @@ export default {
   height: 100%
   background-color: $color-background
   font-size: 12px
-
 
   .chat-wrapper
     width: 90%

@@ -95,6 +95,19 @@ app.use((req, res, next) => {
 app.get('/api', (req, res) => {
 	// 检查是否登录
 	if (req.session.name) {
+		// 判断是否是第二次登录 如果是第二次登录 此时session存在 如果之前关闭流量拿起了 虽然session存在 但是 这个session已经从sessionList 中删除了 所以此时要把这个session值再添加到中
+		for (var i =0; i < sessionList.length; i++) {
+			if (sessionList[i].sessionName === req.session.name) {
+				break;
+			}
+			if (i === sessionList.length-1) {
+				// 此时说明没有找到
+				sessionList.push({
+					sessionName: req.session.name,
+				});
+			}
+		}	
+
 		// 如果登录了 就设置sendData的sessionName为之前设置好的session的username
 		res.send(req.session.name);
 	}else{
