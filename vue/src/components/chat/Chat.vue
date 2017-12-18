@@ -17,7 +17,7 @@
         <div class="dialog-content">
           <span>欢迎您{{userName}}</span>
           <div class='msg'>
-            <div v-for='val in dialog'>
+            <div v-for='val in dialogShow'>
               {{val.sayer}} saying: {{val.content}}{{val.id}}
             </div>
           </div> 
@@ -54,7 +54,7 @@ export default {
       // this.userName 应该替换成由服务器发送来的session值
       this.dialog.push(val);
       // dialog的第一条数据是自动发送的空内容 目的是为了把session和id关联起来 所以展示在内容区断的dialog把第一条数据去除掉
-      this.dialog = this.dialog.splice(1);
+      // this.dialog = this.dialog.splice(1);
     },
     createUserAnswer: function () {
       // 获取所有的用户列表
@@ -74,6 +74,16 @@ export default {
       }).catch((err) => { // 错误处理
         console.log(err);
       });
+    },
+    // 重新登录
+    relogin: function (msg) {
+      this.userList = msg.userList;
+    }
+  },
+  computed: {
+    dialogShow () {
+      var newArr = this.dialog.slice(1);
+      return newArr;
     }
   },
   created () {

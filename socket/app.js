@@ -32,7 +32,7 @@ io.on('connection', function(socket){
 	var setSessionId = true;
 
 	socket.on('question', (message) => {
-		console.log('客户端第一次发问：' + message);
+		// console.log('客户端第一次发问：' + message);
 		// 设置sessionList各个元素的id值 利用messge
 		// 设置一次sessionList的sessionName值为message.sayer这个元素的sessionId属性
 		if (setSessionId) {
@@ -41,7 +41,7 @@ io.on('connection', function(socket){
 					sessionList[i].sessionId = message.id;
 					// 关闭设置开关setSessionId
 					setSessionId = false;
-					console.log('yes', sessionList[i].sessionId);
+					// console.log('yes', sessionList[i].sessionId);
 					break;
 				}
 			}
@@ -60,13 +60,13 @@ io.on('connection', function(socket){
 	});
 
 	socket.on('disconnect', () => {
-		console.log('disnect', socket.id, sessionList);
+		// console.log('disnect', socket.id, sessionList);
 
 		// 然后从sessionList 中删除id为当前socket.id的元素
 		for (var i = 0; i < sessionList.length; i++) {
 			if (sessionList[i].sessionId === socket.id) {
 				sessionList.splice(i, 1);
-				console.log(sessionList);
+				// console.log(sessionList);
 				io.emit('userLeave', 'userLeave');
 				break;
 			}
@@ -105,6 +105,11 @@ app.get('/api', (req, res) => {
 				sessionList.push({
 					sessionName: req.session.name,
 				});
+				console.log(sessionList);
+				// 如何让客户端重新刷新sessionList 数据
+				io.emit('relogin', {
+					userList: sessionList
+				})
 			}
 		}	
 
