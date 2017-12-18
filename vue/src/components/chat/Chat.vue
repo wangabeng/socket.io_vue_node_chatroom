@@ -3,7 +3,7 @@
     <div class="chat-wrapper">
       <div class="user-list">
         <div class='search'>
-          <input type='text' placeholder='搜索成员'>
+          <div class='title'>成员列表</div>
           <i class='search-icon'></i>
         </div>
         
@@ -74,11 +74,6 @@ export default {
       }).catch((err) => { // 错误处理
         console.log(err);
       });
-    },
-    // 重新登录
-    relogin: function (msg) {
-      console.log('reload');
-      this.userList = msg.userList;
     }
   },
   computed: {
@@ -152,7 +147,7 @@ export default {
       border-radius: 5px 0 0 5px
       float: left
 
-      input
+      .title
         width: 80%
 
     .dialog
