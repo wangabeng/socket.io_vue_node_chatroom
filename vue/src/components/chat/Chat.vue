@@ -144,11 +144,15 @@ export default {
       height: 100% 
       float: left
       position: relative
-      overflow-y: scroll
-
+      
+      .dialog-content
+        height: 95%
+        overflow-y: scroll
+        margin-bottom: -40px
+        box-sizing: border-box
+        padding-bottom: 140px
       .send-msg
-        position: absolute
-        bottom: 0
-        right: 0
+        height: 5%
+        padding-top: 40px
 
 </style>

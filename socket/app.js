@@ -47,13 +47,11 @@ io.on('connection', function(socket){
 			}
 		}
 
-
 		for (var key in socketObj) {
 			socketObj[key].emit('answer', message);
 		}
 		// sokt.emit('answer', message); // 非广播模式
 		// io.emit('answer', message); // 广播模式
-
 	});
 
 	// 监听 浏览器的createUser
