@@ -24,11 +24,29 @@ var socketObj = {};
 
 // var nsp = io.of('/my-namespace');
 io.on('connection', function(socket){
+	// 记录当前的socket 每次连接进来一个客服端产生的这个socket 都有一个唯一的id属性 即便没有发送消息 一旦连接 就会产生
+	socketObj[socket.id] = socket;
+	
+	// console.log(socketObj);
+
+	var setSessionId = true;
+
 	socket.on('question', (message) => {
-		console.log('客户端第一次请求：' + message);
-		
-		// 记录当前的socket
-		socketObj[message.sayer] = socket;
+		console.log('客户端第一次发问：' + message);
+		// 设置sessionList各个元素的id值 利用messge
+		// 设置一次sessionList的sessionName值为message.sayer这个元素的sessionId属性
+		if (setSessionId) {
+			for (var i = 0; i < sessionList.length; i++) {
+				if (sessionList[i].sessionName === message.sayer) {
+					sessionList[i].sessionId = message.id;
+					// 关闭设置开关setSessionId
+					setSessionId = false;
+					console.log('yes', sessionList[i].sessionId);
+					break;
+				}
+			}
+		}
+
 
 		for (var key in socketObj) {
 			socketObj[key].emit('answer', message);
@@ -44,30 +62,20 @@ io.on('connection', function(socket){
 	});
 
 	socket.on('disconnect', () => {
-		console.log('disnect');
-		// 遍历socketArr 找出对应的key
-		var curKey;
-		for (var key in socketObj) {
-			if (socketObj[key].id === socket.id) {
-				curKey = key;
-				break;
-			}
-		}
-		// 然后从sessionList 中删除值为key的元素
+		console.log('disnect', socket.id, sessionList);
+
+		// 然后从sessionList 中删除id为当前socket.id的元素
 		for (var i = 0; i < sessionList.length; i++) {
-			if (sessionList[i] === curKey) {
+			if (sessionList[i].sessionId === socket.id) {
 				sessionList.splice(i, 1);
+				console.log(sessionList);
 				io.emit('userLeave', 'userLeave');
 				break;
 			}
 		}
-
-		console.log('socket.id', socket.id, curKey);
 	});
 
 });
-
-
 
 
 // 增加一个中间件 设置访问权限 'Access-Control-Allow-Origin', 'http://localhost:8080' 只允许 'http://localhost:8080'访问
@@ -94,7 +102,11 @@ app.get('/api', (req, res) => {
 	}else{
 		// 如果没有登录 就设置session值为一个随机数 注意转化成字符串 随机数为四位小写字母加上四位随机数字组成
 		req.session.name = getRandomName();
-		sessionList.push(req.session.name);
+		// sessionList.push(req.session.name);
+		// 把sessionList变成一个对象
+		sessionList.push({
+			sessionName: req.session.name,
+		});
 		console.log('不存在 重新设置', sessionList);
 		res.send(req.session.name);
 	}
@@ -102,6 +114,7 @@ app.get('/api', (req, res) => {
 
 // 获取sessionList用户列表 每次有人发言 就请求一次
 app.get('/getUserList', (req, res) => {
+	// 遍历sessionList
 	res.send({
 		userList: sessionList
 	});

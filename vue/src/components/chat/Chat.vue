@@ -1,17 +1,5 @@
 <template>
   <div class="chat">
-    <!---->
-    <span>欢迎您{{userName}}</span>
-    <div class='msg'>
-      <div v-for='val in dialog'>
-        {{val.sayer}} saying: {{val.content}}{{val.id}}
-      </div>
-    </div>  
-    <div>
-      <input type='text' ref='msg'>
-      <input type='button' value='send' ref='send' @click='sendEmit'>
-    </div>
-  
     <div class="chat-wrapper">
       <div class="user-list">
         <div class='search'>
@@ -21,13 +9,23 @@
         
         <ul>
           <li v-for='value in userList'>
-            {{value}}
+            {{value.sessionName}}
           </li>
         </ul>
       </div>
       <div class="dialog">
-        <div class="dialog-content"></div>
-        <div class="send-msg"></div>
+        <div class="dialog-content">
+          <span>欢迎您{{userName}}</span>
+          <div class='msg'>
+            <div v-for='val in dialog'>
+              {{val.sayer}} saying: {{val.content}}{{val.id}}
+            </div>
+          </div> 
+        </div>
+        <div class="send-msg">
+          <input type='text' ref='msg'>
+          <input type='button' value='send' ref='send' @click='sendEmit'>
+        </div>
       </div>
     </div>
   </div>
@@ -128,10 +126,29 @@ export default {
     border: 1px solid red
     margin: 10px auto auto auto
     border-radius: 5px
+    overflow: hidden
 
     .user-list
       width: 20%
+      min-width: 30px
       height: 100%
       background-color: $color-background-dark
       border-radius: 5px 0 0 5px
+      float: left
+
+      input
+        width: 80%
+
+    .dialog
+      width: 80%
+      height: 100% 
+      float: left
+      position: relative
+      overflow-y: scroll
+
+      .send-msg
+        position: absolute
+        bottom: 0
+        right: 0
+
 </style>
